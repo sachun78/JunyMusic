@@ -4,6 +4,11 @@
     <item type="id" name="click_remove" />
     <item type="id" name="indicator_tab" />
 
+    <item type="id" name="container" />
+    <item type="id" name="navigation_drawer" />
+
+    <!-- mini player layout -->
+    <item type="id" name="mini_player" />
     <item type="id" name="mini_player_img" />
     <item type="id" name="mini_player_middle" />
     <item type="id" name="mini_player_txt" />

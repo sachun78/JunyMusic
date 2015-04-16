@@ -9,12 +9,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <fragment android:id="@+id/mini_player"
+        <fragment android:id="@id/mini_player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:name="com.juny.junymusic.MiniPlayerFragment" />
-        <FrameLayout android:id="@+id/container"
+        <FrameLayout android:id="@id/container"
             android:layout_above="@id/mini_player"
             android:layout_alignWithParentIfMissing="true"
             android:layout_width="match_parent"
@@ -28,7 +28,7 @@
     <!-- The drawer is given a fixed width in dp and extends the full height of
          the container. -->
     <FrameLayout
-        android:id="@+id/navigation_drawer"
+        android:id="@id/navigation_drawer"
         android:layout_gravity="start"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent">
