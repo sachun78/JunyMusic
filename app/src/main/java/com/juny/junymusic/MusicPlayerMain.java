@@ -121,6 +121,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerDurationCurrent = (TextView) findViewById(R.id.player_duration_curr);
         mPlayerDurationTotal = (TextView) findViewById(R.id.player_duration_total);
         mPlayerProgressBar = (SeekBar) findViewById(R.id.player_progressbar);
+        mPlayerProgressBar.setOnSeekBarChangeListener(mSeekbarChgListener);
         mPlayerProgressBar.setMax(PROGRESS_MAX);
         mPlayerShuffleBtn = (ImageView) findViewById(R.id.player_ctrl_shuffle);
         mPlayerRepeatBtn = (ImageView) findViewById(R.id.player_ctrl_repeat);
@@ -132,6 +133,42 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerPlayBtn.setOnClickListener(mPlayBtnListener);
 
     }
+
+    private boolean mSeekbarFromUser = false;
+    private SeekBar.OnSeekBarChangeListener mSeekbarChgListener = new SeekBar.OnSeekBarChangeListener() {
+        private int mProgress = 0;
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//            Log.d("hjbae", "## onProgressChanged :: progress: " + progress);
+            long currPos = progress * mDuration / PROGRESS_MAX;
+            mPlayerDurationCurrent.setText(Utils.makeTimeString(MusicPlayerMain.this, currPos / 1000));
+
+            mSeekbarFromUser = fromUser;
+            mProgress = progress;
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+//            Log.d("hjbae", "@@ onStartTrackingTouch :: progress: " + mProgress);
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            if (!mSeekbarFromUser || sService == null)
+                return;
+
+            long pos = mProgress * mDuration / PROGRESS_MAX;
+            try {
+                sService.seek(pos);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+            mSeekbarFromUser = false;
+//            Log.d("hjbae", "** onStopTrackingTouch :: progress: " + mProgress);
+        }
+    };
 
     private View.OnClickListener mPlayBtnListener = new View.OnClickListener() {
         @Override
@@ -411,25 +448,25 @@ public class MusicPlayerMain extends ActionBarActivity {
 
         try {
             long pos = mPosOverride < 0 ? sService.position() : mPosOverride;
-            Log.d("hjbae", "refreshNow :: pos: " + pos);
-            Log.d("hjbae", "refreshNow :: curr width: " + mPlayerDurationCurrent.getWidth() + " totla width: " + mPlayerDurationTotal.getWidth());
-            if (pos >= 0 && mDuration > 0) {
-                mPlayerDurationCurrent.setText(Utils.makeTimeString(this, pos / 1000));
-                int progress = (int) (PROGRESS_MAX * pos / mDuration);
-                mPlayerProgressBar.setProgress(progress);
-            }
-            else {
-                mPlayerDurationCurrent.setText("--:--");
-                mPlayerProgressBar.setProgress(PROGRESS_MAX);
-            }
 
+            // SeekBar가 User에 의해 움질일 경우에는 업데이트 하지 않음
+            if (!mSeekbarFromUser) {
+                if (pos >= 0 && mDuration > 0) {
+                    mPlayerDurationCurrent.setText(Utils.makeTimeString(this, pos / 1000));
+                    int progress = (int) (PROGRESS_MAX * pos / mDuration);
+                    mPlayerProgressBar.setProgress(progress);
+                } else {
+                    mPlayerDurationCurrent.setText("--:--");
+                    mPlayerProgressBar.setProgress(PROGRESS_MAX);
+                }
+            }
             long remains = PROGRESS_MAX - (pos % PROGRESS_MAX);
 
             int width = mPlayerProgressBar.getWidth();
             if (width <= 0) {
                 width = 320;
             }
-            Log.d("hjbae", "refreshNow :: width: " + width + " duration: " + mDuration);
+//            Log.d("hjbae", "refreshNow :: width: " + width + " duration: " + mDuration);
 
             long smothRefreshTime = mDuration / width;
 
