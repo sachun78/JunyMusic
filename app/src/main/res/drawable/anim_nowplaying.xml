@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:duration="30" android:drawable="@drawable/eq0001" />
+    <item android:duration="30" android:drawable="@drawable/eq0002" />
+    <item android:duration="30" android:drawable="@drawable/eq0003" />
+    <item android:duration="30" android:drawable="@drawable/eq0004" />
+    <item android:duration="30" android:drawable="@drawable/eq0005" />
+    <item android:duration="30" android:drawable="@drawable/eq0006" />
+    <item android:duration="30" android:drawable="@drawable/eq0007" />
+    <item android:duration="30" android:drawable="@drawable/eq0008" />
+    <item android:duration="30" android:drawable="@drawable/eq0009" />
+    <item android:duration="30" android:drawable="@drawable/eq0010" />
+    <item android:duration="30" android:drawable="@drawable/eq0011" />
+    <item android:duration="30" android:drawable="@drawable/eq0012" />
+    <item android:duration="30" android:drawable="@drawable/eq0013" />
+    <item android:duration="30" android:drawable="@drawable/eq0014" />
+    <item android:duration="30" android:drawable="@drawable/eq0015" />
+    <item android:duration="30" android:drawable="@drawable/eq0016" />
+    <item android:duration="30" android:drawable="@drawable/eq0017" />
+    <item android:duration="30" android:drawable="@drawable/eq0018" />
+    <item android:duration="30" android:drawable="@drawable/eq0019" />
+    <item android:duration="30" android:drawable="@drawable/eq0020" />
+    <item android:duration="30" android:drawable="@drawable/eq0021" />
+    <item android:duration="30" android:drawable="@drawable/eq0022" />
+    <item android:duration="30" android:drawable="@drawable/eq0023" />
+    <item android:duration="30" android:drawable="@drawable/eq0024" />
+    <item android:duration="30" android:drawable="@drawable/eq0025" />
+    <item android:duration="30" android:drawable="@drawable/eq0026" />
+    <item android:duration="30" android:drawable="@drawable/eq0027" />
+    <item android:duration="30" android:drawable="@drawable/eq0028" />
+    <item android:duration="30" android:drawable="@drawable/eq0029" />
+    <item android:duration="30" android:drawable="@drawable/eq0030" />
+</animation-list>

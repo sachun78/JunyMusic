@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="drag_handle" />
+    <item type="id" name="click_remove" />
+    <item type="id" name="indicator_tab" />
+
+    <item type="id" name="mini_player_img" />
+    <item type="id" name="mini_player_middle" />
+    <item type="id" name="mini_player_txt" />
+    <item type="id" name="mini_player_progress" />
+    <item type="id" name="mini_player_btn" />
+
+    <!-- music player layout -->
+    <item type="id" name="player_top_pannel" />
+    <item type="id" name="player_artwork" />
+    <item type="id" name="player_title_pannel" />
+    <item type="id" name="player_progressbar_pannel" />
+    <item type="id" name="player_contorl_pannel" />
+</resources>
