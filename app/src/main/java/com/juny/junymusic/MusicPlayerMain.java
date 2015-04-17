@@ -178,9 +178,11 @@ public class MusicPlayerMain extends ActionBarActivity {
 
             try {
                 if (sService.isPlaying()) {
+                    mHandler.removeMessages(REFRESH);
                     sService.pause();
                 }
                 else {
+                    queueNextRefresh(1);
                     sService.play();
                 }
                 setPauseButtonImage();
