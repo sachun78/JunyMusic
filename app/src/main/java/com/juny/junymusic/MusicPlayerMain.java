@@ -506,8 +506,10 @@ public class MusicPlayerMain extends ActionBarActivity {
 
     @Override
     protected void onStop() {
-        Utils.unbindFromService(mToken);
+        mHandler.removeMessages(REFRESH);
         unregisterReceiver(mPlayStateReceiver);
+        Utils.unbindFromService(mToken);
+        sService = null;
         super.onStop();
     }
 
@@ -517,6 +519,7 @@ public class MusicPlayerMain extends ActionBarActivity {
             mCurrentPlayerArtwork.recycle();
             mCurrentPlayerArtwork = null;
         }
+        mWorker.quit();
         super.onDestroy();
     }
 }
