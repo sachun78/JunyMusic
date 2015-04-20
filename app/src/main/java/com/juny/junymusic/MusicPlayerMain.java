@@ -107,6 +107,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         mAlbumArtHandler = new AlbumArtHandler(mWorker.getLooper());
 
         mPlayerCurrPlaylist = (ImageView) findViewById(R.id.player_curr_list);
+        mPlayerCurrPlaylist.setOnClickListener(mCurrPlayListBtn);
         mPlayerArtwork = (ImageView) findViewById(R.id.player_artwork);
         mPlayerTtile = (TextView) findViewById(R.id.player_title);
         /**
@@ -133,6 +134,14 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerPlayBtn.setOnClickListener(mPlayBtnListener);
 
     }
+
+    private View.OnClickListener mCurrPlayListBtn = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MusicPlayerMain.this, NowPlayingMain.class);
+            startActivity(intent);
+        }
+    };
 
     private boolean mSeekbarFromUser = false;
     private SeekBar.OnSeekBarChangeListener mSeekbarChgListener = new SeekBar.OnSeekBarChangeListener() {

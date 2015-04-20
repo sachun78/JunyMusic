@@ -1,7 +1,6 @@
 package com.juny.junymusic;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -206,8 +205,8 @@ public class MainActivity extends ActionBarActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_addmylist) {
-            Intent intent = new Intent(this, CursorDSLV.class);
-            startActivity(intent);
+//            Intent intent = new Intent(this, NowPlayingMain.class);
+//            startActivity(intent);
             return true;
         }
         else if (id == R.id.action_search) {

@@ -121,19 +121,6 @@ public class TabSongFragment extends ListFragment
         Utils.playAll(getActivity(), cursor, position);
 //        getActivity().overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
 
-
-//        this.mAdapter.getItem(position);
-//
-//        int idx_id = cursor.getColumnIndex("_id");
-//        int idx_data = cursor.getColumnIndex("_data");
-//
-//        long _id = cursor.getLong(idx_id);
-//        String _data = cursor.getString(idx_data);
-
-//        Intent intent = new Intent(getActivity(), MusicPlayerMain.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        intent.putExtra("SELECT_DATA", _data);
-//        startActivity(intent);
     }
 
     @Override

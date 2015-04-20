@@ -20,14 +20,27 @@
         android:layout_marginBottom="@dimen/list_item_margin"
         android:layout_toRightOf="@id/list_songs_albumart"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/list_song_title"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:text="UnKnown"
-            android:singleLine="true"
-            android:textSize="15sp"/>
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/list_song_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="UnKnown"
+                android:singleLine="true"
+                android:textSize="15sp"/>
+            <ImageView
+                android:id="@id/drag_handle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/btn_linechange_default"
+                android:visibility="gone"/>
+         </RelativeLayout>
+        
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
