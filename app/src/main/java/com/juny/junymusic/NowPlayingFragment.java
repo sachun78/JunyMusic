@@ -1,6 +1,5 @@
 package com.juny.junymusic;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
@@ -23,16 +22,9 @@ import com.juny.junymusic.util.Utils;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class NowPlayingFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-//    ArrayAdapter<String> adapter;
     TabSongsCursorAdapter adapter;
-
-    private String[] array;
-    private ArrayList<String> list;
 
     private DragSortListView.DropListener onDrop =
             new DragSortListView.DropListener() {
@@ -107,8 +99,6 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
         NowPlayingFragment f = new NowPlayingFragment();
 
         Bundle args = new Bundle();
-        args.putInt("headers", headers);
-        args.putInt("footers", footers);
         f.setArguments(args);
 
         return f;
@@ -128,10 +118,6 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
      * set a different adapter.
      */
     public void setListAdapter() {
-        array = getResources().getStringArray(R.array.jazz_artist_names);
-        list = new ArrayList<String>(Arrays.asList(array));
-
-//        adapter = new ArrayAdapter<String>(getActivity(), getItemLayout(), R.id.text, list);
         adapter = new TabSongsCursorAdapter(getActivity(), null, 0);
         setListAdapter(adapter);
     }
@@ -144,7 +130,6 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
         // defaults are
         //   dragStartMode = onDown
         //   removeMode = flingRight
-        Log.d("hjbae", "== buildController ==");
         DragSortController controller = new DragSortController(dslv);
         controller.setDragHandleId(R.id.drag_handle);
         controller.setClickRemoveId(R.id.click_remove);
@@ -160,7 +145,6 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("hjbae", "== onCreateView ==");
         mDslv = (DragSortListView) inflater.inflate(getLayout(), container, false);
 
         mController = buildController(mDslv);
@@ -180,44 +164,8 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
         mDslv.setDropListener(onDrop);
         mDslv.setRemoveListener(onRemove);
 
-        Bundle args = getArguments();
-        int headers = 0;
-        int footers = 0;
-        if (args != null) {
-            headers = args.getInt("headers", 0);
-            footers = args.getInt("footers", 0);
-        }
-
-        for (int i = 0; i < headers; i++) {
-            addHeader(getActivity(), mDslv);
-        }
-        for (int i = 0; i < footers; i++) {
-            addFooter(getActivity(), mDslv);
-        }
-
         setListAdapter();
         this.getLoaderManager().initLoader(0, null, this);
-    }
-
-
-    public static void addHeader(Activity activity, DragSortListView dslv) {
-        LayoutInflater inflater = activity.getLayoutInflater();
-        int count = dslv.getHeaderViewsCount();
-
-        TextView header = (TextView) inflater.inflate(R.layout.header_footer, null);
-        header.setText("Header #" + (count + 1));
-
-        dslv.addHeaderView(header, null, false);
-    }
-
-    public static void addFooter(Activity activity, DragSortListView dslv) {
-        LayoutInflater inflater = activity.getLayoutInflater();
-        int count = dslv.getFooterViewsCount();
-
-        TextView footer = (TextView) inflater.inflate(R.layout.header_footer, null);
-        footer.setText("Footer #" + (count + 1));
-
-        dslv.addFooterView(footer, null, false);
     }
 
     @Override
