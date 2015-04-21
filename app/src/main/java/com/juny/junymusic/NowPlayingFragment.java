@@ -2,7 +2,6 @@ package com.juny.junymusic;
 
 import android.app.Activity;
 import android.content.Context;
-import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
@@ -27,14 +26,13 @@ import com.mobeta.android.dslv.DragSortListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class DSLVFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class NowPlayingFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
 //    ArrayAdapter<String> adapter;
     TabSongsCursorAdapter adapter;
 
     private String[] array;
     private ArrayList<String> list;
-    private String [] mColumn;
 
     private DragSortListView.DropListener onDrop =
             new DragSortListView.DropListener() {
@@ -105,8 +103,8 @@ public class DSLVFragment extends ListFragment implements LoaderManager.LoaderCa
     public boolean sortEnabled = true;
     public boolean dragEnabled = true;
 
-    public static DSLVFragment newInstance(int headers, int footers) {
-        DSLVFragment f = new DSLVFragment();
+    public static NowPlayingFragment newInstance(int headers, int footers) {
+        NowPlayingFragment f = new NowPlayingFragment();
 
         Bundle args = new Bundle();
         args.putInt("headers", headers);
@@ -119,15 +117,6 @@ public class DSLVFragment extends ListFragment implements LoaderManager.LoaderCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mColumn = new String[] {
-                MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.DATA
-        };
     }
 
     public DragSortController getController() {
@@ -256,181 +245,6 @@ public class DSLVFragment extends ListFragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
         this.adapter.swapCursor(null);
-    }
-
-    private class NowPlayCursor extends AbstractCursor {
-
-        private String [] mCols;
-        private Cursor mCurrentPlaylistCursor;     // updated in onMove
-        private int mSize;          // size of the queue
-        private long[] mNowPlaying;
-        private long[] mCursorIdxs;
-        private int mCurPos;
-        private IMediaPlaybackService mService;
-
-        public NowPlayCursor (IMediaPlaybackService service, String [] cols) {
-            mService = service;
-            mCols = cols;
-            makeNowPlayingCursor();
-        }
-
-        private void makeNowPlayingCursor() {
-            mCurrentPlaylistCursor = null;
-
-            try {
-                mNowPlaying = mService.getQueue();
-            } catch (RemoteException e) {
-                mNowPlaying = new long[0];
-            }
-
-            mSize = mNowPlaying.length;
-            if (mSize <= 0) {
-                return;
-            }
-
-            StringBuilder where = new StringBuilder();
-            where.append(MediaStore.Audio.Media._ID + " IN (");
-            for (int i = 0; i < mSize; i++) {
-                where.append(mNowPlaying[i]);
-                if (i < mSize -1) {
-                    where.append(",");
-                }
-            }
-            where.append(")");
-
-            mCurrentPlaylistCursor = Utils.query(getActivity(),
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    mCols, where.toString(), null, MediaStore.Audio.Media._ID);
-
-            if (mCurrentPlaylistCursor == null) {
-                mSize = 0;
-                return;
-            }
-
-            int size = mCurrentPlaylistCursor.getCount();
-            mCursorIdxs = new long[size];
-            int cloumnIdx = mCurrentPlaylistCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
-            mCurrentPlaylistCursor.moveToFirst();
-            for (int i = 0; i < size; i++) {
-                mCursorIdxs[i] = mCurrentPlaylistCursor.getLong(cloumnIdx);
-                mCurrentPlaylistCursor.moveToNext();
-            }
-            mCurrentPlaylistCursor.moveToFirst();
-            mCurPos = -1;
-
-            try {
-                int removed = 0;
-                for (int i = mNowPlaying.length -1; i >= 0; i--) {
-                    long trackID = mNowPlaying[i];
-                    int crsidx = Arrays.binarySearch(mCursorIdxs, trackID);
-                    if (crsidx < 0) {
-                        removed += mService.removeTrack(trackID);
-                    }
-                }
-
-                if (removed > 0) {
-                    mNowPlaying = mService.getQueue();
-                    mSize = mNowPlaying.length;
-                    if (mSize <= 0) {
-                        mCursorIdxs = null;
-                        return;
-                    }
-                }
-            } catch (RemoteException e) {
-                mNowPlaying = new long[0];
-            }
-        }
-
-        @Override
-        public boolean onMove(int oldPosition, int newPosition) {
-            if (oldPosition == newPosition) {
-                return true;
-            }
-            if (mNowPlaying == null || mCursorIdxs == null || newPosition >= mNowPlaying.length) {
-                return false;
-            }
-
-            long newId = mNowPlaying[newPosition];
-            int idx = Arrays.binarySearch(mCursorIdxs, newId);
-            mCurrentPlaylistCursor.moveToPosition(idx);
-            mCurPos = newPosition;
-
-            return true;
-        }
-
-        public boolean removeItem(int which) {
-            try {
-                if (mService.removeTracks(which, which) == 0) {
-                    return false;   // delete failed
-                }
-
-                int i = which;
-                mSize--;
-                while (i < mSize) {
-                    mNowPlaying[i] = mNowPlaying[i+1];
-                    i++;
-                }
-                onMove(-1, (int)mCurPos);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
-
-        public void moveItem(int from, int to) {
-            try {
-                mService.moveQueueItem(from, to);
-                mNowPlaying = mService.getQueue();
-                onMove(-1, (int)mCurPos);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return mCurrentPlaylistCursor.getCount();
-        }
-
-        @Override
-        public String[] getColumnNames() {
-            return mCols;
-        }
-
-        @Override
-        public String getString(int column) {
-            return mCurrentPlaylistCursor.getString(column);
-        }
-
-        @Override
-        public short getShort(int column) {
-            return mCurrentPlaylistCursor.getShort(column);
-        }
-
-        @Override
-        public int getInt(int column) {
-            return mCurrentPlaylistCursor.getInt(column);
-        }
-
-        @Override
-        public long getLong(int column) {
-            return mCurrentPlaylistCursor.getLong(column);
-        }
-
-        @Override
-        public float getFloat(int column) {
-            return mCurrentPlaylistCursor.getFloat(column);
-        }
-
-        @Override
-        public double getDouble(int column) {
-            return mCurrentPlaylistCursor.getDouble(column);
-        }
-
-        @Override
-        public boolean isNull(int column) {
-            return mCurrentPlaylistCursor.isNull(column);
-        }
     }
 
     private class TabSongsCursorAdapter extends CursorAdapter {
