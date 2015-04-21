@@ -380,7 +380,7 @@ public class Utils {
     public static void playPlaylist(Context context, long plid) {
         long [] list = getSongListForPlaylist(context, plid);
         if (list != null) {
-            playAll(context, list, -1, false);
+            playAll(context, list, -1, false, false);
         }
     }
 
@@ -775,28 +775,40 @@ public class Utils {
     }
 
     public static void shuffleAll(Context context, Cursor cursor) {
-        playAll(context, cursor, 0, true);
+        playAll(context, cursor, 0, true, false);
+    }
+
+    public static void nowPlay(Context context, Cursor cursor, int position ) {
+        playAll(context, cursor, position, false, true);
     }
 
     public static void playAll(Context context, Cursor cursor) {
-        playAll(context, cursor, 0, false);
+        playAll(context, cursor, 0, false, false);
     }
 
     public static void playAll(Context context, Cursor cursor, int position) {
-        playAll(context, cursor, position, false);
+        playAll(context, cursor, position, false, false);
     }
 
     public static void playAll(Context context, long [] list, int position) {
-        playAll(context, list, position, false);
+        playAll(context, list, position, false, false);
     }
 
-    private static void playAll(Context context, Cursor cursor, int position, boolean force_shuffle) {
+    private static void playAll(Context context,
+                                Cursor cursor,
+                                int position,
+                                boolean force_shuffle,
+                                boolean now_playing) {
 
         long [] list = getSongListForCursor(cursor);
-        playAll(context, list, position, force_shuffle);
+        playAll(context, list, position, force_shuffle, now_playing);
     }
 
-    private static void playAll(Context context, long [] list, int position, boolean force_shuffle) {
+    private static void playAll(Context context,
+                                long [] list,
+                                int position,
+                                boolean force_shuffle,
+                                boolean now_playing) {
         if (list.length == 0 || sService == null) {
             Log.d("MusicUtils", "attempt to play empty song list");
             // Don't try to play empty playlists. Nothing good will come of it.
@@ -828,9 +840,11 @@ public class Utils {
             sService.play();
         } catch (RemoteException ex) {
         } finally {
-            Intent intent = new Intent("com.juny.junymusic.PLAYBACK_VIEWER")
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            context.startActivity(intent);
+            if (!now_playing) {
+                Intent intent = new Intent("com.juny.junymusic.PLAYBACK_VIEWER")
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(intent);
+            }
         }
     }
 

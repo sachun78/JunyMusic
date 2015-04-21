@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.juny.junymusic.IMediaPlaybackService;
@@ -207,6 +208,21 @@ public class NowPlayingFragment extends ListFragment {
                     }
                 }
             };
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        if (sService == null) {
+            return;
+        }
+
+        Cursor cursor = mAdapter.getCursor();
+        if (cursor.getCount() == 0) {
+            return;
+        }
+
+        Utils.nowPlay(getActivity(), cursor, position);
+        mAdapter.notifyDataSetInvalidated();
+    }
 
     private class NowPlayingCursorAdapter extends CursorAdapter {
 
