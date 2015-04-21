@@ -1,4 +1,4 @@
-package com.juny.junymusic;
+package com.juny.junymusic.service;
 
 import android.content.Context;
 

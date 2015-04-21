@@ -1,4 +1,4 @@
-package com.juny.junymusic;
+package com.juny.junymusic.player;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.juny.junymusic.R;
 import com.juny.junymusic.util.Utils;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;

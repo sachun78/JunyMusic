@@ -1,4 +1,4 @@
-package com.juny.junymusic;
+package com.juny.junymusic.player;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.juny.junymusic.IMediaPlaybackService;
+import com.juny.junymusic.service.MediaPlaybackService;
+import com.juny.junymusic.R;
 import com.juny.junymusic.util.Utils;
 
 

@@ -1,9 +1,11 @@
-package com.juny.junymusic;
+package com.juny.junymusic.util;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+
+import com.juny.junymusic.service.MediaPlaybackService;
 
 /**
  * Created by Administrator on 2015-04-12.

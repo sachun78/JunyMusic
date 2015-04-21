@@ -1,4 +1,4 @@
-package com.juny.junymusic;
+package com.juny.junymusic.service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
+
+import com.juny.junymusic.service.MediaPlaybackService;
 
 /**
  * Created by Administrator on 2015-04-12.

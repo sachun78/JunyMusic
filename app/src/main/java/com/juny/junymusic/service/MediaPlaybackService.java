@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.juny.junymusic;
+package com.juny.junymusic.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -50,6 +50,9 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.juny.junymusic.IMediaPlaybackService;
+import com.juny.junymusic.util.MediaAppWidgetProvider;
+import com.juny.junymusic.R;
 import com.juny.junymusic.util.SharedPreferencesCompat;
 import com.juny.junymusic.util.Utils;
 

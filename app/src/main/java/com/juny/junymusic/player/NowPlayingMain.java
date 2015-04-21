@@ -1,7 +1,9 @@
-package com.juny.junymusic;
+package com.juny.junymusic.player;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import com.juny.junymusic.R;
 
 /**
  * Created by Administrator on 2015-04-19.
@@ -17,7 +19,7 @@ public class NowPlayingMain extends FragmentActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.now_play_main, NowPlayingFragment.newInstance(0,0), mTag).commit();
+                    .add(R.id.now_play_main, NowPlayingFragment.newInstance(0, 0), mTag).commit();
         }
     }
 }

@@ -59,7 +59,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.juny.junymusic.IMediaPlaybackService;
-import com.juny.junymusic.MediaPlaybackService;
+import com.juny.junymusic.service.MediaPlaybackService;
 import com.juny.junymusic.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;

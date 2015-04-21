@@ -23,13 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CursorDSLV" >
-        </activity>
-        <activity android:name=".NowPlayingMain">
+        <activity android:name=".player.NowPlayingMain">
         </activity>
 
         <activity
-            android:name=".MusicPlayerMain"
+            android:name=".player.MusicPlayerMain"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:label="@string/title_activity_music_player_main"
             android:launchMode="singleTop"
@@ -51,17 +49,17 @@
         </activity>
         
         <service
-            android:name=".MediaPlaybackService"
+            android:name=".service.MediaPlaybackService"
             android:exported="false" />
 
-        <receiver android:name=".MediaButtonIntentReceiver">
+        <receiver android:name=".service.MediaButtonIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".MediaAppWidgetProvider">
+        <receiver android:name=".util.MediaAppWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

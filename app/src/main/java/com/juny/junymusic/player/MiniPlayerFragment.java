@@ -1,4 +1,4 @@
-package com.juny.junymusic;
+package com.juny.junymusic.player;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,10 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.juny.junymusic.MainActivity;
+import com.juny.junymusic.R;
+
 /**
  * Created by Administrator on 2015-04-05.
  */
-public class MiniPlayerFragment extends Fragment implements MainActivity.TestListener{
+public class MiniPlayerFragment extends Fragment implements MainActivity.TestListener {
 
     private View rootView;
     private RelativeLayout mMiniPlayerLayout;

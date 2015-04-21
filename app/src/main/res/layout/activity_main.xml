@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:name="com.juny.junymusic.MiniPlayerFragment" />
+            android:name="com.juny.junymusic.player.MiniPlayerFragment" />
         <FrameLayout android:id="@id/container"
             android:layout_above="@id/mini_player"
             android:layout_alignWithParentIfMissing="true"
