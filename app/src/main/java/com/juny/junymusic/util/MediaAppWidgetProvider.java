@@ -17,7 +17,7 @@ public class MediaAppWidgetProvider extends AppWidgetProvider {
     public static final String CMDAPPWIDGETUPDATE = "appwidgetupdate";
     private static MediaAppWidgetProvider sInstance;
 
-    static synchronized MediaAppWidgetProvider getInstance() {
+    public static synchronized MediaAppWidgetProvider getInstance() {
         if (sInstance == null) {
             sInstance = new MediaAppWidgetProvider();
         }
@@ -27,7 +27,7 @@ public class MediaAppWidgetProvider extends AppWidgetProvider {
     /**
      * Update all active widget instances by pushing changes
      */
-    void performUpdate(MediaPlaybackService service, int[] appWidgetIds) {
+    public void performUpdate(MediaPlaybackService service, int[] appWidgetIds) {
 
     }
 
@@ -44,7 +44,7 @@ public class MediaAppWidgetProvider extends AppWidgetProvider {
     /**
      * Handle a change notification coming over from {@link MediaPlaybackService}
      */
-    void notifyChange(MediaPlaybackService service, String what) {
+    public void notifyChange(MediaPlaybackService service, String what) {
         if (hasInstances(service)) {
             if (MediaPlaybackService.META_CHANGED.equals(what) ||
                     MediaPlaybackService.PLAYSTATE_CHANGED.equals(what)) {

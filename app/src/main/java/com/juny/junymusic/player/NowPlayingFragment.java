@@ -1,6 +1,7 @@
 package com.juny.junymusic.player;
 
 import android.content.Context;
+import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
@@ -18,14 +19,192 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.juny.junymusic.IMediaPlaybackService;
 import com.juny.junymusic.R;
 import com.juny.junymusic.util.Utils;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
+import java.util.Arrays;
+
 public class NowPlayingFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     TabSongsCursorAdapter adapter;
+
+    private class NowPlayCursor extends AbstractCursor {
+
+        private String [] mCols;
+        private Cursor mCurrentPlaylistCursor;     // updated in onMove
+        private int mSize;          // size of the queue
+        private long[] mNowPlaying;
+        private long[] mCursorIdxs;
+        private int mCurPos;
+        private IMediaPlaybackService mService;
+
+        public NowPlayCursor (IMediaPlaybackService service, String [] cols) {
+            mService = service;
+            mCols = cols;
+            makeNowPlayingCursor();
+        }
+
+        private void makeNowPlayingCursor() {
+            mCurrentPlaylistCursor = null;
+
+            try {
+                mNowPlaying = mService.getQueue();
+            } catch (RemoteException e) {
+                mNowPlaying = new long[0];
+            }
+
+            mSize = mNowPlaying.length;
+            if (mSize <= 0) {
+                return;
+            }
+
+            StringBuilder where = new StringBuilder();
+            where.append(MediaStore.Audio.Media._ID + " IN (");
+            for (int i = 0; i < mSize; i++) {
+                where.append(mNowPlaying[i]);
+                if (i < mSize -1) {
+                    where.append(",");
+                }
+            }
+            where.append(")");
+
+            mCurrentPlaylistCursor = Utils.query(getActivity(),
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    mCols, where.toString(), null, MediaStore.Audio.Media._ID);
+
+            if (mCurrentPlaylistCursor == null) {
+                mSize = 0;
+                return;
+            }
+
+            int size = mCurrentPlaylistCursor.getCount();
+            mCursorIdxs = new long[size];
+            int cloumnIdx = mCurrentPlaylistCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
+            mCurrentPlaylistCursor.moveToFirst();
+            for (int i = 0; i < size; i++) {
+                mCursorIdxs[i] = mCurrentPlaylistCursor.getLong(cloumnIdx);
+                mCurrentPlaylistCursor.moveToNext();
+            }
+            mCurrentPlaylistCursor.moveToFirst();
+            mCurPos = -1;
+
+            try {
+                int removed = 0;
+                for (int i = mNowPlaying.length -1; i >= 0; i--) {
+                    long trackID = mNowPlaying[i];
+                    int crsidx = Arrays.binarySearch(mCursorIdxs, trackID);
+                    if (crsidx < 0) {
+                        removed += mService.removeTrack(trackID);
+                    }
+                }
+
+                if (removed > 0) {
+                    mNowPlaying = mService.getQueue();
+                    mSize = mNowPlaying.length;
+                    if (mSize <= 0) {
+                        mCursorIdxs = null;
+                        return;
+                    }
+                }
+            } catch (RemoteException e) {
+                mNowPlaying = new long[0];
+            }
+        }
+
+        @Override
+        public boolean onMove(int oldPosition, int newPosition) {
+            if (oldPosition == newPosition) {
+                return true;
+            }
+            if (mNowPlaying == null || mCursorIdxs == null || newPosition >= mNowPlaying.length) {
+                return false;
+            }
+
+            long newId = mNowPlaying[newPosition];
+            int idx = Arrays.binarySearch(mCursorIdxs, newId);
+            mCurrentPlaylistCursor.moveToPosition(idx);
+            mCurPos = newPosition;
+
+            return true;
+        }
+
+        public boolean removeItem(int which) {
+            try {
+                if (mService.removeTracks(which, which) == 0) {
+                    return false;   // delete failed
+                }
+
+                int i = which;
+                mSize--;
+                while (i < mSize) {
+                    mNowPlaying[i] = mNowPlaying[i+1];
+                    i++;
+                }
+                onMove(-1, (int)mCurPos);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        public void moveItem(int from, int to) {
+            try {
+                mService.moveQueueItem(from, to);
+                mNowPlaying = mService.getQueue();
+                onMove(-1, (int)mCurPos);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return mCurrentPlaylistCursor.getCount();
+        }
+
+        @Override
+        public String[] getColumnNames() {
+            return mCols;
+        }
+
+        @Override
+        public String getString(int column) {
+            return mCurrentPlaylistCursor.getString(column);
+        }
+
+        @Override
+        public short getShort(int column) {
+            return mCurrentPlaylistCursor.getShort(column);
+        }
+
+        @Override
+        public int getInt(int column) {
+            return mCurrentPlaylistCursor.getInt(column);
+        }
+
+        @Override
+        public long getLong(int column) {
+            return mCurrentPlaylistCursor.getLong(column);
+        }
+
+        @Override
+        public float getFloat(int column) {
+            return mCurrentPlaylistCursor.getFloat(column);
+        }
+
+        @Override
+        public double getDouble(int column) {
+            return mCurrentPlaylistCursor.getDouble(column);
+        }
+
+        @Override
+        public boolean isNull(int column) {
+            return mCurrentPlaylistCursor.isNull(column);
+        }
+    }
 
     private DragSortListView.DropListener onDrop =
             new DragSortListView.DropListener() {
@@ -60,6 +239,9 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
                         int idx = c.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
                         long _id = c.getLong(idx);
                         Utils.sService.removeTrack(_id);
+
+                        Cursor mCursor = new NowPlayCursor(Utils.sService, mColumn);
+                        adapter.changeCursor(mCursor);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -156,10 +338,20 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
         return mDslv;
     }
 
+    private String [] mColumn = {
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.ALBUM_ID,
+            MediaStore.Audio.Media.DATA
+    };
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        NowPlayCursor mNowPlayCursor = new NowPlayCursor(Utils.sService, mColumn);
         mDslv = (DragSortListView) getListView();
 
         mDslv.setDropListener(onDrop);
@@ -182,17 +374,19 @@ public class NowPlayingFragment extends ListFragment implements LoaderManager.Lo
                 MediaStore.Audio.Media.DATA
         };
         String [] arrayOfString02 = {"1"};
-
+        Log.d("hjbae", "onCreateLoader");
         return new CursorLoader(getActivity(), uri, arrayOfString01, "is_music = ?", arrayOfString02, "title COLLATE LOCALIZED ASC");
     }
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        Log.d("hjbae", "onLoadFinished");
         this.adapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
+        Log.d("hjbae", "onLoaderReset");
         this.adapter.swapCursor(null);
     }
 
