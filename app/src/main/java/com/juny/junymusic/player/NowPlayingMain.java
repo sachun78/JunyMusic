@@ -19,7 +19,7 @@ public class NowPlayingMain extends FragmentActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.now_play_main, NowPlayingFragment.newInstance(0, 0), mTag).commit();
+                    .add(R.id.now_play_main, NowPlayingFragment.newInstance(), mTag).commit();
         }
     }
 }
