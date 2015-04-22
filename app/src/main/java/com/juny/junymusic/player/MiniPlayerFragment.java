@@ -94,10 +94,10 @@ public class MiniPlayerFragment extends Fragment {
 
     private void showHide(boolean paramBoolean) {
         if (paramBoolean) {
-            getFragmentManager().beginTransaction().show(this).commit();
+            getFragmentManager().beginTransaction().show(this).commitAllowingStateLoss();
             return;
         }
-        getFragmentManager().beginTransaction().hide(this).commit();
+        getFragmentManager().beginTransaction().hide(this).commitAllowingStateLoss();
     }
 
     @Override
