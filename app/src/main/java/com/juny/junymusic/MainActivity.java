@@ -42,15 +42,6 @@ public class MainActivity extends ActionBarActivity
     // "뒤로"버튼 한번 더 누르시면 종료됩니다.
     private boolean checkBack = false;
 
-    private TestListener mCallback;
-    public static abstract interface TestListener {
-        public abstract void onMetaChanged();
-    }
-
-    public void addTestListener(TestListener mTestListener) {
-        mCallback = mTestListener;
-    }
-
     private static DrawerMenuItem[] mMenuItems;
     static {
         DrawerMenuItem[] arrayOfDrawerMenuItem = new DrawerMenuItem[4];
@@ -59,6 +50,15 @@ public class MainActivity extends ActionBarActivity
         arrayOfDrawerMenuItem[2] = new DrawerMenuItem(2, ConstantData.DRAWER_TYPE_ITEMS, R.drawable.btn_mylist_off_default, "My Lists");
         arrayOfDrawerMenuItem[3] = new DrawerMenuItem(3, ConstantData.DRAWER_TYPE_ITEMS, R.drawable.btn_like_off_default, "My Favorites");
         mMenuItems = arrayOfDrawerMenuItem;
+    }
+
+    private OnPlayingListener mCallback;
+    public static abstract interface OnPlayingListener {
+        public abstract void onMetaChanged();
+    }
+
+    public void setOnPlayingListener(OnPlayingListener onPlayingListener) {
+        mCallback = onPlayingListener;
     }
 
     @Override
@@ -136,8 +136,6 @@ public class MainActivity extends ActionBarActivity
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, DrawerMyListFragment.newInstance())
                         .commit();
-                // Temp Check
-                mCallback.onMetaChanged();
                 break;
             // 즐겨찾기
             case ConstantData.DRAWER_ITEM_SECTION_FAVORITE:

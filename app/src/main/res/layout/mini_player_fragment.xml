@@ -6,7 +6,7 @@
     android:background="@color/mini_player_background">
 
     <ImageView
-        android:id="@+id/mini_player_img"
+        android:id="@id/mini_player_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/mini_player_margin"
@@ -15,7 +15,7 @@
         android:layout_marginBottom="@dimen/mini_player_margin"
         android:src="@drawable/btn_songs_off_default"/>
     <ImageView
-        android:id="@+id/mini_player_btn"
+        android:id="@id/mini_player_btn"
         android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         android:layout_toLeftOf="@id/mini_player_btn"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/mini_player_txt"
+            android:id="@id/mini_player_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
@@ -42,7 +42,7 @@
             android:singleLine="true"
             android:text="MiniPlayer"/>
         <ProgressBar
-            android:id="@+id/mini_player_progress"
+            android:id="@id/mini_player_progress"
             android:layout_width="match_parent"
             android:layout_height="5dp"
             style="?android:attr/progressBarStyleHorizontal"
