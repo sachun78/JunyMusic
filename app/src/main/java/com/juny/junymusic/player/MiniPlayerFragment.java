@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +29,10 @@ import com.juny.junymusic.util.Utils;
  * Created by Administrator on 2015-04-05.
  */
 public class MiniPlayerFragment extends Fragment {
+
+    private final int PRO_MAX = 100;
+    private final int REFRESH = 0;
+    private long mDuration;
 
     private View rootView;
     private RelativeLayout mMiniPlayerLayout;
@@ -63,12 +69,62 @@ public class MiniPlayerFragment extends Fragment {
         Log.d("hjbae", "Mini: onCreateView");
         rootView = inflater.inflate(R.layout.mini_player_fragment, container, false);
         mMiniPlayerLayout = (RelativeLayout) rootView.findViewById(R.id.mini_player_layout);
+        mMiniPlayerLayout.setOnClickListener(mBodyListener);
         mMiniPlayerArtWork = (ImageView) rootView.findViewById(R.id.mini_player_img);
         mMiniPlayerTitle = (TextView) rootView.findViewById(R.id.mini_player_txt);
         mMiniPlayerProgressBar = (ProgressBar) rootView.findViewById(R.id.mini_player_progress);
+        mMiniPlayerProgressBar.setMax(PRO_MAX);
         mMiniPlayerPlayBtn = (ImageView) rootView.findViewById(R.id.mini_player_btn);
+        mMiniPlayerPlayBtn.setOnClickListener(mPlayBtnListener);
 
         return rootView;
+    }
+
+    private View.OnClickListener mBodyListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent("com.juny.junymusic.PLAYBACK_VIEWER")
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            getActivity().startActivity(intent);
+        }
+    };
+
+    private View.OnClickListener mPlayBtnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (Utils.sService == null)
+                return;
+
+            try {
+                if (Utils.sService.isPlaying()) {
+                    mHandler.removeMessages(REFRESH);
+                    Utils.sService.pause();
+                }
+                else {
+                    queueNextRefresh(1);
+                    Utils.sService.play();
+                }
+                refreshPlayBtn();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private void refreshPlayBtn() {
+        if (Utils.sService == null)
+            return;
+
+        try {
+            if (Utils.sService.isPlaying()) {
+                mMiniPlayerPlayBtn.setImageResource(R.drawable.btn_pausesmall_default);
+            }
+            else {
+                mMiniPlayerPlayBtn.setImageResource(R.drawable.btn_play02_default);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -77,16 +133,28 @@ public class MiniPlayerFragment extends Fragment {
         Log.d("hjbae", "Mini: onActivityCreated");
     }
 
-    private void loadCurrentArtWork() {
+    private void init_UI() {
         if (Utils.sService == null) {
             Log.e("hjbae", "Mini :: loadCurrentArtWork is Fail @@@@");
             return;
         }
-        Log.d("hjbae", "Mini :: loadCurrentArtWork ### ");
+
         try {
+            // Album Art
             long album_id = Utils.sService.getAlbumId();
             Uri uri = Utils.getAlbumartUri(album_id);
             Utils.setImage(uri, mMiniPlayerArtWork);
+
+            // Title
+            String title = Utils.sService.getTrackName();
+            String artist = Utils.sService.getArtistName();
+            mMiniPlayerTitle.setText(title + " - " + artist);
+
+            mDuration = Utils.sService.duration();
+            int delay = refreshNow();
+            queueNextRefresh(delay);
+
+            refreshPlayBtn();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -103,6 +171,7 @@ public class MiniPlayerFragment extends Fragment {
     @Override
     public void onDestroy() {
         mActivity.unregisterReceiver(mReceiver);
+        mHandler.removeMessages(REFRESH);
         super.onDestroy();
     }
 
@@ -112,9 +181,43 @@ public class MiniPlayerFragment extends Fragment {
             String action = intent.getAction();
             Log.d("hjbae", "action: " + action);
             if (action.equals(MediaPlaybackService.PLAY_START)) {
+                init_UI();
                 showHide(true);
-                loadCurrentArtWork();
             }
         }
     };
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case REFRESH:
+                    int delay = refreshNow();
+                    queueNextRefresh(delay);
+                    break;
+            }
+        }
+    };
+
+    private void queueNextRefresh(int delay) {
+        Message msg = mHandler.obtainMessage(REFRESH);
+        mHandler.removeMessages(REFRESH);
+        mHandler.sendMessageDelayed(msg, delay);
+    }
+
+    private int refreshNow() {
+        if (Utils.sService == null)
+            return 500;
+
+        try {
+            long curPos = Utils.sService.position() ;
+            int progress = (int)(PRO_MAX * curPos / mDuration);
+            mMiniPlayerProgressBar.setProgress(progress);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        return 500;
+    }
 }
