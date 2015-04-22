@@ -59,8 +59,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.juny.junymusic.IMediaPlaybackService;
-import com.juny.junymusic.service.MediaPlaybackService;
 import com.juny.junymusic.R;
+import com.juny.junymusic.service.MediaPlaybackService;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -1401,7 +1402,17 @@ public class Utils {
             return;
         }
 
-        ImageLoader.getInstance().displayImage(uri.toString(), imgView,
+        DisplayImageOptions displayOptions = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.circle_music)
+                .showImageForEmptyUri(R.drawable.circle_music)
+                .showImageOnFail(R.drawable.circle_music)
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
+
+        ImageLoader.getInstance().displayImage(uri.toString(), imgView, displayOptions,
                 new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
@@ -1410,7 +1421,7 @@ public class Utils {
 
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason) {
-                        imgView.setImageResource(R.drawable.circle_music);
+//                        imgView.setImageResource(R.drawable.circle_music);
                     }
 
                     @Override
