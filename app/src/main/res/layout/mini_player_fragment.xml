@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mini_player_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="60dp"
     android:background="@color/mini_player_background">
 
     <ImageView
@@ -11,25 +12,22 @@
         android:layout_height="40dp"
         android:layout_marginLeft="@dimen/mini_player_margin"
         android:layout_marginRight="@dimen/mini_player_margin"
-        android:layout_marginTop="@dimen/mini_player_margin"
-        android:layout_marginBottom="@dimen/mini_player_margin"
+        android:layout_centerVertical="true"
         android:src="@drawable/btn_songs_off_default"/>
     <ImageView
         android:id="@id/mini_player_btn"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginLeft="@dimen/mini_player_margin"
         android:layout_marginRight="@dimen/mini_player_margin"
-        android:layout_marginTop="@dimen/mini_player_margin"
-        android:layout_marginBottom="@dimen/mini_player_margin"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:src="@drawable/btn_play02_default"/>
     <LinearLayout
         android:id="@+id/mini_player_middle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/mini_player_margin"
-        android:layout_marginBottom="@dimen/mini_player_margin"
+        android:layout_centerVertical="true"
         android:layout_toRightOf="@id/mini_player_img"
         android:layout_toLeftOf="@id/mini_player_btn"
         android:orientation="vertical">
@@ -37,14 +35,18 @@
             android:id="@id/mini_player_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/mini_player_margin"
             android:textColor="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:singleLine="true"
+            android:ellipsize="marquee"
             android:text="MiniPlayer"/>
         <ProgressBar
             android:id="@id/mini_player_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/mini_player_margin"
+            android:paddingRight="@dimen/mini_player_margin"
             style="?android:attr/progressBarStyleHorizontal"
             android:progressDrawable="@drawable/mini_custom_progressbar_02"
             android:progress="0"/>

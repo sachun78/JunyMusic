@@ -170,6 +170,7 @@ public class MiniPlayerFragment extends Fragment {
             String title = Utils.sService.getTrackName();
             String artist = Utils.sService.getArtistName();
             mMiniPlayerTitle.setText(title + " - " + artist);
+            mMiniPlayerTitle.setSelected(true);
 
             mDuration = Utils.sService.duration();
             int delay = refreshNow();
