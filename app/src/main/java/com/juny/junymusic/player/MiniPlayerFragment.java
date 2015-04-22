@@ -2,12 +2,15 @@ package com.juny.junymusic.player;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
@@ -21,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.juny.junymusic.IMediaPlaybackService;
 import com.juny.junymusic.R;
 import com.juny.junymusic.service.MediaPlaybackService;
 import com.juny.junymusic.util.Utils;
@@ -43,6 +47,21 @@ public class MiniPlayerFragment extends Fragment {
 
     private Activity mActivity;
 
+    private Utils.ServiceToken mToken;
+    private IMediaPlaybackService sService;
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            sService = IMediaPlaybackService.Stub.asInterface(service);
+            checkShowHide();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            sService = null;
+        }
+    };
+
     public MiniPlayerFragment() {}
 
     @Override
@@ -56,12 +75,14 @@ public class MiniPlayerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("hjbae", "Mini: onCreate");
+
+        mToken = Utils.bindToService(getActivity(), conn);
+
         IntentFilter f = new IntentFilter();
         f.addAction(MediaPlaybackService.META_CHANGED);
         f.addAction(MediaPlaybackService.PLAYSTATE_CHANGED);
-        f.addAction(MediaPlaybackService.PLAY_START);
         mActivity.registerReceiver(mReceiver, new IntentFilter(f));
-        showHide(false);
+//        showHide(false);
     }
 
     @Override
@@ -170,6 +191,7 @@ public class MiniPlayerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        Utils.unbindFromService(mToken);
         mActivity.unregisterReceiver(mReceiver);
         mHandler.removeMessages(REFRESH);
         super.onDestroy();
@@ -179,13 +201,24 @@ public class MiniPlayerFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.d("hjbae", "action: " + action);
-            if (action.equals(MediaPlaybackService.PLAY_START)) {
-                init_UI();
-                showHide(true);
+            if (action.equals(MediaPlaybackService.META_CHANGED)) {
+                checkShowHide();
             }
         }
     };
+
+    private void checkShowHide() {
+        try {
+            if (sService != null && sService.getAudioId() != -1) {
+                init_UI();
+                showHide(true);
+                return;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        showHide(false);
+    }
 
     private Handler mHandler = new Handler() {
         @Override

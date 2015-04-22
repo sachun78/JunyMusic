@@ -88,7 +88,6 @@ public class MediaPlaybackService extends Service {
     public static final String PLAYSTATE_CHANGED = "com.juny.junymusic.playstatechanged";
     public static final String META_CHANGED = "com.juny.junymusic.metachanged";
     public static final String QUEUE_CHANGED = "com.juny.junymusic.queuechanged";
-    public static final String PLAY_START = "com.juny.junymusic.playstart";
 
     public static final String SERVICECMD = "com.juny.junymusic.musicservicecommand";
     public static final String CMDNAME = "command";
@@ -1174,9 +1173,6 @@ public class MediaPlaybackService extends Service {
                 mIsSupposedToBePlaying = true;
                 notifyChange(PLAYSTATE_CHANGED);
             }
-
-            Intent intent = new Intent(PLAY_START);
-            sendBroadcast(intent);
 
         } else if (mPlayListLen <= 0) {
             // This is mostly so that if you press 'play' on a bluetooth headset
