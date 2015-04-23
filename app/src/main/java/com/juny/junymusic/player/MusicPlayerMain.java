@@ -16,16 +16,19 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.juny.junymusic.IMediaPlaybackService;
-import com.juny.junymusic.service.MediaPlaybackService;
 import com.juny.junymusic.R;
+import com.juny.junymusic.service.MediaPlaybackService;
+import com.juny.junymusic.util.OnSwipeListener;
 import com.juny.junymusic.util.Utils;
 
 
@@ -59,6 +62,8 @@ public class MusicPlayerMain extends ActionBarActivity {
     private ImageView mPlayerPlayBtn;
     private ImageView mPlayerNextBtn;
     private ImageView mPlayerShuffleBtn;
+
+    private GestureDetector _gesture;
 
     private Utils.ServiceToken mToken;
     private IMediaPlaybackService sService = null;
@@ -112,6 +117,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerCurrPlaylist = (ImageView) findViewById(R.id.player_curr_list);
         mPlayerCurrPlaylist.setOnClickListener(mCurrPlayListBtn);
         mPlayerArtwork = (ImageView) findViewById(R.id.player_artwork);
+        mPlayerArtwork.setOnTouchListener(mArtworkTouchListener);
         mPlayerTtile = (TextView) findViewById(R.id.player_title);
         /**
          * xml 에서
@@ -136,12 +142,65 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerPlayBtn = (ImageView) findViewById(R.id.player_ctrl_play);
         mPlayerPlayBtn.setOnClickListener(mPlayBtnListener);
 
+        _gesture = new GestureDetector(this, mSwipeListener);
     }
+
+    private View.OnTouchListener mArtworkTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            _gesture.onTouchEvent(event);
+            return false;
+        }
+    };
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        _gesture.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private OnSwipeListener mSwipeListener = new OnSwipeListener() {
+        @Override
+        public boolean onSwipeleft() {
+            if (sService == null)
+                return false;
+
+            try {
+                sService.next();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onSwipeRight() {
+            if (sService == null)
+                return false;
+
+            try {
+                sService.prev();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onClick(MotionEvent event) {
+            Intent intent = new Intent(MusicPlayerMain.this, NowPlayingMain.class);
+            intent.putExtra("VIEWMODE","lyricview");
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.abc_slide_out_top);
+            return true;
+        }
+    };
 
     private View.OnClickListener mCurrPlayListBtn = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
         Intent intent = new Intent(MusicPlayerMain.this, NowPlayingMain.class);
+        intent.putExtra("VIEWMODE","nowplaying");
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.abc_slide_out_top);
         }

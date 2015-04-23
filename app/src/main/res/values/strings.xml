@@ -308,4 +308,7 @@
     <string name="title_activity_music_player_main">MusicPlayerMain</string>
 
     <string name="now_playing_list">Now playing list</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
