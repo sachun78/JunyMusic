@@ -65,6 +65,10 @@ public class NowPlayingMain extends FragmentActivity {
         Intent intent = new Intent(this, MusicPlayerMain.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_from_top, R.anim.abc_slide_out_bottom);
+        if (mMode == MODE_NOW_PLAYING ) {
+            overridePendingTransition(R.anim.slide_in_from_top, R.anim.abc_slide_out_bottom);
+        } else {
+            overridePendingTransition(R.anim.juny_slide_in_left, R.anim.juny_slide_out_left);
+        }
     }
 }
