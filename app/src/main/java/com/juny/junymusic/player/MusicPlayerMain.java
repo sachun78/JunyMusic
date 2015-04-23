@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -111,6 +112,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_player_main);
 
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         mWorker = new Worker("Album Art Worker");
         mAlbumArtHandler = new AlbumArtHandler(mWorker.getLooper());
 
@@ -127,6 +129,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerTtile.setSelected(true);
         mPlayerArtist = (TextView) findViewById(R.id.player_artist);
         mPlayerVolumeBtn = (ImageView) findViewById(R.id.player_volume_img);
+        mPlayerVolumeBtn.setOnClickListener(mVolBtnListener);
         mPlayerFavoriteBtn = (ImageView) findViewById(R.id.player_favorite_img);
         mPlayerDurationCurrent = (TextView) findViewById(R.id.player_duration_curr);
         mPlayerDurationTotal = (TextView) findViewById(R.id.player_duration_total);
@@ -144,6 +147,22 @@ public class MusicPlayerMain extends ActionBarActivity {
 
         _gesture = new GestureDetector(this, mSwipeListener);
     }
+
+    private View.OnClickListener mVolBtnListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            if (sService == null) {
+                return;
+            }
+            try {
+                int vol = sService.getStreamVolume();
+                sService.setVolume(vol);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     private View.OnTouchListener mArtworkTouchListener = new View.OnTouchListener() {
         @Override

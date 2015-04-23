@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -90,6 +91,7 @@ public class TabSongFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mToken = Utils.bindToService(getActivity(), mConn);
+        getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override

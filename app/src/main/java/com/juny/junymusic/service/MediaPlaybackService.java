@@ -1856,6 +1856,16 @@ public class MediaPlaybackService extends Service {
         }
     }
 
+    public int getStreamVolume() {
+        int ret = 0;
+        ret = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        return ret;
+    }
+
+    public void setVolume(int vol) {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, vol, AudioManager.FLAG_SHOW_UI);
+    }
+
     /**
      * Provides a unified interface for dealing with midi files and
      * other media files.
@@ -2175,6 +2185,12 @@ public class MediaPlaybackService extends Service {
         }
         public int getAudioSessionId() {
             return mService.get().getAudioSessionId();
+        }
+        public int getStreamVolume() {
+            return mService.get().getStreamVolume();
+        }
+        public void setVolume(int vol) {
+            mService.get().setVolume(vol);
         }
     }
 

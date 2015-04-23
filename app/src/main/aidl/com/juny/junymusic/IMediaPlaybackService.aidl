@@ -39,4 +39,6 @@ interface IMediaPlaybackService {
         int getRepeatMode();
         int getMediaMountedCount();
         int getAudioSessionId();
+        int getStreamVolume();
+        void setVolume(int vol);
 }
