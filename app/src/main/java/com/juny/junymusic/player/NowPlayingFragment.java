@@ -60,6 +60,7 @@ public class NowPlayingFragment extends ListFragment {
         public void onServiceConnected(ComponentName name, IBinder service) {
             sService = IMediaPlaybackService.Stub.asInterface(service);
             setListAdapter();
+            listSelection();
         }
 
         @Override
@@ -111,6 +112,28 @@ public class NowPlayingFragment extends ListFragment {
     public void onStart() {
         super.onStart();
         mToken = Utils.bindToService(getActivity(), conn);
+    }
+
+    private void listSelection() {
+        if (sService == null) {
+            Log.e("hjbae", "listSelection: Service is null");
+            return;
+        }
+
+        try {
+            getListView().setSelection(sService.getQueuePosition());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
