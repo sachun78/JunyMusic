@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.juny.junymusic.R;
 
@@ -15,6 +16,7 @@ public class NowPlayingMain extends FragmentActivity {
 
     private String mTag = "nowPlaying";
 
+    private TextView mNowPlayTitle;
     private ImageView mNowPlayCloseBtn;
     private ImageView mNowPlayListPlus;
 
@@ -46,6 +48,15 @@ public class NowPlayingMain extends FragmentActivity {
             }
         }
 
+        mNowPlayListPlus = (ImageView) findViewById(R.id.now_play_listplus);
+        mNowPlayTitle = (TextView) findViewById(R.id.now_play_title);
+        if (mMode == MODE_NOW_PLAYING) {
+            mNowPlayListPlus.setVisibility(View.VISIBLE);
+            mNowPlayTitle.setText(R.string.now_playing_list);
+        } else {
+            mNowPlayListPlus.setVisibility(View.GONE);
+            mNowPlayTitle.setText(R.string.lyric_viewer);
+        }
         mNowPlayCloseBtn = (ImageView) findViewById(R.id.now_play_closebtn);
         mNowPlayCloseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +64,6 @@ public class NowPlayingMain extends FragmentActivity {
                 goBackAndTransition();
             }
         });
-        mNowPlayListPlus = (ImageView) findViewById(R.id.now_play_listplus);
     }
 
     @Override

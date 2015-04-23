@@ -149,15 +149,9 @@ public class MusicPlayerMain extends ActionBarActivity {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             _gesture.onTouchEvent(event);
-            return false;
+            return true;
         }
     };
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        _gesture.onTouchEvent(event);
-        return super.onTouchEvent(event);
-    }
 
     private OnSwipeListener mSwipeListener = new OnSwipeListener() {
         @Override
