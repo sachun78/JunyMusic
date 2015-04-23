@@ -1,7 +1,10 @@
 package com.juny.junymusic.player;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.AbstractCursor;
 import android.database.Cursor;
@@ -23,6 +26,7 @@ import android.widget.TextView;
 
 import com.juny.junymusic.IMediaPlaybackService;
 import com.juny.junymusic.R;
+import com.juny.junymusic.service.MediaPlaybackService;
 import com.juny.junymusic.util.Utils;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
@@ -111,8 +115,23 @@ public class NowPlayingFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
+        IntentFilter f = new IntentFilter();
+        f.addAction(MediaPlaybackService.META_CHANGED);
+        getActivity().registerReceiver(mReceiver, f);
         mToken = Utils.bindToService(getActivity(), conn);
     }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String act = intent.getAction();
+            if (act.equals(MediaPlaybackService.META_CHANGED)) {
+                if (mAdapter != null) {
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+    };
 
     private void listSelection() {
         if (sService == null) {
@@ -138,6 +157,7 @@ public class NowPlayingFragment extends ListFragment {
 
     @Override
     public void onStop() {
+        getActivity().unregisterReceiver(mReceiver);
         Utils.unbindFromService(mToken);
         super.onStop();
     }
