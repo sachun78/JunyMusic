@@ -141,8 +141,9 @@ public class MusicPlayerMain extends ActionBarActivity {
     private View.OnClickListener mCurrPlayListBtn = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(MusicPlayerMain.this, NowPlayingMain.class);
-            startActivity(intent);
+        Intent intent = new Intent(MusicPlayerMain.this, NowPlayingMain.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_from_bottom, R.anim.abc_slide_out_top);
         }
     };
 
