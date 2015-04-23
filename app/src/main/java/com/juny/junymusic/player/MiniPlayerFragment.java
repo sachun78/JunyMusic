@@ -113,17 +113,17 @@ public class MiniPlayerFragment extends Fragment {
     private View.OnClickListener mPlayBtnListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (Utils.sService == null)
+            if (sService == null)
                 return;
 
             try {
-                if (Utils.sService.isPlaying()) {
+                if (sService.isPlaying()) {
                     mHandler.removeMessages(REFRESH);
-                    Utils.sService.pause();
+                    sService.pause();
                 }
                 else {
                     queueNextRefresh(1);
-                    Utils.sService.play();
+                    sService.play();
                 }
                 refreshPlayBtn();
             } catch (RemoteException e) {
@@ -133,11 +133,11 @@ public class MiniPlayerFragment extends Fragment {
     };
 
     private void refreshPlayBtn() {
-        if (Utils.sService == null)
+        if (sService == null)
             return;
 
         try {
-            if (Utils.sService.isPlaying()) {
+            if (sService.isPlaying()) {
                 mMiniPlayerPlayBtn.setImageResource(R.drawable.btn_pausesmall_default);
             }
             else {
@@ -154,25 +154,31 @@ public class MiniPlayerFragment extends Fragment {
         Log.d("hjbae", "Mini: onActivityCreated");
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshPlayBtn();
+    }
+
     private void init_UI() {
-        if (Utils.sService == null) {
+        if (sService == null) {
             Log.e("hjbae", "Mini :: loadCurrentArtWork is Fail @@@@");
             return;
         }
 
         try {
             // Album Art
-            long album_id = Utils.sService.getAlbumId();
+            long album_id = sService.getAlbumId();
             Uri uri = Utils.getAlbumartUri(album_id);
             Utils.setImage(uri, mMiniPlayerArtWork);
 
             // Title
-            String title = Utils.sService.getTrackName();
-            String artist = Utils.sService.getArtistName();
+            String title = sService.getTrackName();
+            String artist = sService.getArtistName();
             mMiniPlayerTitle.setText(title + " - " + artist);
             mMiniPlayerTitle.setSelected(true);
 
-            mDuration = Utils.sService.duration();
+            mDuration = sService.duration();
             int delay = refreshNow();
             queueNextRefresh(delay);
 
@@ -240,11 +246,11 @@ public class MiniPlayerFragment extends Fragment {
     }
 
     private int refreshNow() {
-        if (Utils.sService == null)
+        if (sService == null)
             return 500;
 
         try {
-            long curPos = Utils.sService.position() ;
+            long curPos = sService.position() ;
             int progress = (int)(PRO_MAX * curPos / mDuration);
             mMiniPlayerProgressBar.setProgress(progress);
 
