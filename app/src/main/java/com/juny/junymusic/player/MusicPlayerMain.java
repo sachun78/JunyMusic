@@ -81,6 +81,10 @@ public class MusicPlayerMain extends ActionBarActivity {
                 {
                     setPauseButtonImage();
                 }
+
+                setRepeatButtonImage();
+                setShuffleButtonImage();
+
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -137,7 +141,9 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerProgressBar.setOnSeekBarChangeListener(mSeekbarChgListener);
         mPlayerProgressBar.setMax(PROGRESS_MAX);
         mPlayerShuffleBtn = (ImageView) findViewById(R.id.player_ctrl_shuffle);
+        mPlayerShuffleBtn.setOnClickListener(mShuffleBtnListener);
         mPlayerRepeatBtn = (ImageView) findViewById(R.id.player_ctrl_repeat);
+        mPlayerRepeatBtn.setOnClickListener(mRepeatBtnListener);
         mPlayerRevBtn = (ImageView) findViewById(R.id.player_ctrl_prev);
         mPlayerRevBtn.setOnClickListener(mPrevBtnListenr);
         mPlayerNextBtn = (ImageView) findViewById(R.id.player_ctrl_next);
@@ -146,6 +152,87 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerPlayBtn.setOnClickListener(mPlayBtnListener);
 
         _gesture = new GestureDetector(this, mSwipeListener);
+    }
+
+    private View.OnClickListener mShuffleBtnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (sService == null)
+                return;
+
+            try {
+                int shuffleMode = sService.getShuffleMode();
+                if (shuffleMode == MediaPlaybackService.SHUFFLE_NONE) {
+                    sService.setShuffleMode(MediaPlaybackService.SHUFFLE_NORMAL);
+                }
+                else if (shuffleMode == MediaPlaybackService.SHUFFLE_NORMAL ||
+                        shuffleMode == MediaPlaybackService.SHUFFLE_AUTO) {
+                    sService.setShuffleMode(MediaPlaybackService.SHUFFLE_NONE);
+                }
+                setShuffleButtonImage();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private void setShuffleButtonImage() {
+        if (sService == null)
+            return;
+
+        try {
+            switch (sService.getShuffleMode()) {
+                case MediaPlaybackService.SHUFFLE_NONE:
+                    mPlayerShuffleBtn.setImageResource(R.drawable.btn_shuffle_off_default);
+                    break;
+                case MediaPlaybackService.SHUFFLE_NORMAL:
+                    mPlayerShuffleBtn.setImageResource(R.drawable.btn_shuffle_on_default);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private View.OnClickListener mRepeatBtnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (sService == null)
+                return;
+
+            try {
+                int repeatMode = sService.getRepeatMode();
+                int mRepeatMode = repeatMode + 1;
+                if (mRepeatMode > MediaPlaybackService.REPEAT_ALL) {
+                    mRepeatMode = MediaPlaybackService.REPEAT_NONE;
+                }
+                sService.setRepeatMode(mRepeatMode);
+                setRepeatButtonImage();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private void setRepeatButtonImage() {
+        if (sService == null)
+            return;
+
+        try {
+            switch (sService.getRepeatMode()) {
+                case MediaPlaybackService.REPEAT_ALL:
+                    mPlayerRepeatBtn.setImageResource(R.drawable.btn_repeat_all_default);
+                    break;
+                case MediaPlaybackService.REPEAT_CURRENT:
+                    mPlayerRepeatBtn.setImageResource(R.drawable.btn_repeat_one_default);
+                    break;
+                case MediaPlaybackService.REPEAT_NONE:
+                    mPlayerRepeatBtn.setImageResource(R.drawable.btn_repeat_no_default);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private View.OnClickListener mVolBtnListener = new View.OnClickListener() {
@@ -328,6 +415,8 @@ public class MusicPlayerMain extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         setPauseButtonImage();
+        setRepeatButtonImage();
+        setShuffleButtonImage();
     }
 
     @Override
