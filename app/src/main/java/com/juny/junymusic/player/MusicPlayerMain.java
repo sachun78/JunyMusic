@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -54,7 +55,7 @@ public class MusicPlayerMain extends ActionBarActivity {
     private TextView mPlayerTtile;
     private TextView mPlayerArtist;
     private ImageView mPlayerVolumeBtn;
-    private ImageView mPlayerFavoriteBtn;
+    private CheckBox mPlayerFavoriteBtn;
     private TextView mPlayerDurationCurrent;
     private TextView mPlayerDurationTotal;
     private SeekBar mPlayerProgressBar;
@@ -134,7 +135,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerArtist = (TextView) findViewById(R.id.player_artist);
         mPlayerVolumeBtn = (ImageView) findViewById(R.id.player_volume_img);
         mPlayerVolumeBtn.setOnClickListener(mVolBtnListener);
-        mPlayerFavoriteBtn = (ImageView) findViewById(R.id.player_favorite_img);
+        mPlayerFavoriteBtn = (CheckBox) findViewById(R.id.player_favorite_img);
         mPlayerDurationCurrent = (TextView) findViewById(R.id.player_duration_curr);
         mPlayerDurationTotal = (TextView) findViewById(R.id.player_duration_total);
         mPlayerProgressBar = (SeekBar) findViewById(R.id.player_progressbar);

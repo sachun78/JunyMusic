@@ -57,12 +57,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/btn_volume_on_default"/>
-            <ImageView
+            <CheckBox
                 android:id="@+id/player_favorite_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/btn_player_like_off_default"/>
+                android:button="@null"
+                android:background="@drawable/checkbox_favorite"/>
             <TextView
                 android:id="@+id/player_artist"
                 android:layout_width="match_parent"
