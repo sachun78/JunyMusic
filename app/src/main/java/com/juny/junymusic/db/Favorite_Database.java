@@ -47,13 +47,14 @@ public class Favorite_Database {
         cv.put(DatabaseHelper.KEY_TITLE, item.mTitle);
         cv.put(DatabaseHelper.KEY_DATA, item.mData);
         cv.put(DatabaseHelper.KEY_ALBUM, item.mAlbum);
-        cv.put(DatabaseHelper.KEY_ALBUM_ID, item.mAlbum_id);
+        cv.put(DatabaseHelper.KEY_ALBUM_ID, item.mAlbumID);
         cv.put(DatabaseHelper.KEY_ARTIST, item.mArtist);
         cv.put(DatabaseHelper.KEY_DURATION, item.mDuration);
 
         long retVal = mDB.insert(DatabaseHelper.TABLE_NAME, null, cv);
         Cursor c = mDB.rawQuery("select * from " + DatabaseHelper.TABLE_NAME, null);
 
+        Toast.makeText(mContext, "currentDB count: " + c.getCount(), Toast.LENGTH_SHORT).show();
         if (c.getCount() > DatabaseHelper.FAVORITE_MAX) {
             mDB.delete(DatabaseHelper.TABLE_NAME, DatabaseHelper.KEY_INDEX + "=" + retVal, null);
             Toast.makeText(mContext, "Over Favorite Count 50!!!", Toast.LENGTH_SHORT).show();

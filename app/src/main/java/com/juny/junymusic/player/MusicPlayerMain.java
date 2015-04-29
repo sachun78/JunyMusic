@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -29,9 +30,13 @@ import android.widget.TextView;
 
 import com.juny.junymusic.IMediaPlaybackService;
 import com.juny.junymusic.R;
+import com.juny.junymusic.data.FavoriteItem;
+import com.juny.junymusic.db.Favorite_Database;
 import com.juny.junymusic.service.MediaPlaybackService;
 import com.juny.junymusic.util.OnSwipeListener;
 import com.juny.junymusic.util.Utils;
+
+import java.sql.SQLException;
 
 
 public class MusicPlayerMain extends ActionBarActivity {
@@ -67,6 +72,8 @@ public class MusicPlayerMain extends ActionBarActivity {
 
     private GestureDetector _gesture;
 
+    private Favorite_Database fDB;
+
     private Utils.ServiceToken mToken;
     private IMediaPlaybackService sService = null;
     private ServiceConnection conn = new ServiceConnection() {
@@ -85,6 +92,7 @@ public class MusicPlayerMain extends ActionBarActivity {
 
                 setRepeatButtonImage();
                 setShuffleButtonImage();
+                setFavoriteButtonImage();
 
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -104,6 +112,7 @@ public class MusicPlayerMain extends ActionBarActivity {
             if (action.equals(MediaPlaybackService.META_CHANGED)) {
                 updateTrackInfo();
                 setPauseButtonImage();
+                setFavoriteButtonImage();
                 queueNextRefresh(1);
             }
             else if (action.equals(MediaPlaybackService.PLAYSTATE_CHANGED)) {
@@ -121,6 +130,13 @@ public class MusicPlayerMain extends ActionBarActivity {
         mWorker = new Worker("Album Art Worker");
         mAlbumArtHandler = new AlbumArtHandler(mWorker.getLooper());
 
+        fDB = new Favorite_Database(MusicPlayerMain.this);
+        try {
+            fDB.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         mPlayerCurrPlaylist = (ImageView) findViewById(R.id.player_curr_list);
         mPlayerCurrPlaylist.setOnClickListener(mCurrPlayListBtn);
         mPlayerArtwork = (ImageView) findViewById(R.id.player_artwork);
@@ -136,6 +152,7 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerVolumeBtn = (ImageView) findViewById(R.id.player_volume_img);
         mPlayerVolumeBtn.setOnClickListener(mVolBtnListener);
         mPlayerFavoriteBtn = (CheckBox) findViewById(R.id.player_favorite_img);
+        mPlayerFavoriteBtn.setOnClickListener(mFavoriteBtnListener);
         mPlayerDurationCurrent = (TextView) findViewById(R.id.player_duration_curr);
         mPlayerDurationTotal = (TextView) findViewById(R.id.player_duration_total);
         mPlayerProgressBar = (SeekBar) findViewById(R.id.player_progressbar);
@@ -153,6 +170,70 @@ public class MusicPlayerMain extends ActionBarActivity {
         mPlayerPlayBtn.setOnClickListener(mPlayBtnListener);
 
         _gesture = new GestureDetector(this, mSwipeListener);
+    }
+
+    private View.OnClickListener mFavoriteBtnListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (sService == null)
+                return;
+
+            try {
+                long currAudioID = sService.getAudioId();
+                Cursor c = Utils.getCurrCursorForID(getContentResolver(), currAudioID);
+                int idx_audio_id = c.getColumnIndexOrThrow("_id");
+                int idx_title = c.getColumnIndexOrThrow("title");
+                int idx_data = c.getColumnIndexOrThrow("_data");
+                int idx_album = c.getColumnIndexOrThrow("album");
+                int idx_album_id = c.getColumnIndexOrThrow("album_id");
+                int idx_artist = c.getColumnIndexOrThrow("artist");
+                int idx_duration = c.getColumnIndexOrThrow("duration");
+
+                FavoriteItem item = new FavoriteItem();
+                item.mAudioID = c.getLong(idx_audio_id);
+                item.mTitle = c.getString(idx_title);
+                item.mData = c.getString(idx_data);
+                item.mAlbum = c.getString(idx_album);
+                item.mAlbumID = c.getLong(idx_album_id);
+                item.mArtist = c.getString(idx_artist);
+                item.mDuration = c.getLong(idx_duration);
+
+                if (fDB.isDuplicate(item.mAudioID) == false) {
+                    long ret = fDB.insert(item);
+                    if (ret != -1) {
+                        mPlayerFavoriteBtn.setChecked(true);
+                    }
+                }
+                else {
+                    boolean idDel = fDB.delete(currAudioID);
+                    if (idDel) {
+                        mPlayerFavoriteBtn.setChecked(false);
+                    }
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private void setFavoriteButtonImage() {
+        if (sService == null || fDB == null) {
+            Log.e("hjbae","sSErvice: " + sService + " fDB: " + fDB);
+            return;
+        }
+
+        try {
+            long audioId = sService.getAudioId();
+
+            if (fDB.isDuplicate(audioId)) {
+                mPlayerFavoriteBtn.setChecked(true);
+            }
+            else {
+                mPlayerFavoriteBtn.setChecked(false);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private View.OnClickListener mShuffleBtnListener = new View.OnClickListener() {
@@ -697,6 +778,7 @@ public class MusicPlayerMain extends ActionBarActivity {
             mCurrentPlayerArtwork = null;
         }
         mWorker.quit();
+        fDB.close();
         super.onDestroy();
     }
 }

@@ -1388,6 +1388,23 @@ public class Utils {
         }
     }
 
+    public static Cursor getCurrCursorForID(ContentResolver cr, long id) {
+        String[] mProjection =
+                {   MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.ALBUM,
+                    MediaStore.Audio.Media.ALBUM_ID,
+                    MediaStore.Audio.Media.ARTIST,
+                    MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media.DURATION
+                };
+        Cursor c = cr.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mProjection, "_id=" + id, null, null);
+        if (c != null) {
+            c.moveToFirst();
+        }
+        return c;
+    }
+
     private static int defaultArtwork;
     static {
         defaultArtwork = R.drawable.img_song_big;

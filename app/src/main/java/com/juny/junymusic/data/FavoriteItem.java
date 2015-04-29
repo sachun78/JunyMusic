@@ -8,7 +8,7 @@ public class FavoriteItem {
     public String   mTitle;
     public String   mData;
     public String   mAlbum;
-    public long     mAlbum_id;
+    public long     mAlbumID;
     public String   mArtist;
     public long     mDuration;
 
@@ -17,7 +17,7 @@ public class FavoriteItem {
         mTitle = "";
         mData = "";
         mAlbum = "";
-        mAlbum_id = -1;
+        mAlbumID = -1;
         mArtist = "";
         mDuration = 0;
     }
