@@ -3,8 +3,10 @@ package com.juny.junymusic;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,12 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.juny.junymusic.adapter.DrawerListViewAdapter;
 import com.juny.junymusic.data.ConstantData;
 import com.juny.junymusic.data.DrawerMenuItem;
+import com.juny.junymusic.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private RelativeLayout rootView;
     private DrawerLayout mDrawerLayout;
+    private ImageView mDrawerCurrentAlbum;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
@@ -114,6 +120,7 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         System.out.println("hjbae == onCreateView ==");
         rootView = (RelativeLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        mDrawerCurrentAlbum = (ImageView) rootView.findViewById(R.id.drawer_current_album);
         mDrawerListView = (ListView) rootView.findViewById(R.id.drawer_list);
         mDrawerListView.setDivider(null);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -140,11 +147,28 @@ public class NavigationDrawerFragment extends Fragment {
         return rootView;
     }
 
+    private void setCurrentAlbumArt() {
+        if (Utils.sService == null) {
+            Log.e("hjbae", "Utils.sServie is null");
+            return;
+        }
+
+        try {
+            long audioID = Utils.sService.getAlbumId();
+            Uri uri = Utils.getAlbumartUri(audioID);
+            Utils.setImage(uri, mDrawerCurrentAlbum);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public boolean isDrawerOpen() {
         return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
     public void DrawerOpen() {
+        setCurrentAlbumArt();
         mDrawerLayout.openDrawer(mFragmentContainerView);
     }
 

@@ -33,6 +33,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_ARTIST + " TEXT, "
             + KEY_DURATION + " INTEGER "
             + ");";
+    public static final String[] mColumm = {
+            KEY_INDEX, KEY_AUDIO_ID, KEY_TITLE,
+            KEY_DATA, KEY_ALBUM, KEY_ALBUM_ID,
+            KEY_ARTIST, KEY_DURATION
+    };
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -15,10 +15,20 @@
         android:background="@android:color/transparent"
         tools:context=".NavigationDrawerFragment" />
         -->
+    <ImageView
+        android:id="@+id/drawer_current_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="200dp"
+        android:minWidth="200dp"
+        android:layout_margin="20dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/juny_music"/>
     <ListView
         android:id="@+id/drawer_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/drawer_current_album"
         android:choiceMode="singleChoice"
         android:background="@android:color/transparent"
         tools:context=".NavigationDrawerFragment" />

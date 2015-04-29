@@ -1422,7 +1422,7 @@ public class Utils {
         DisplayImageOptions displayOptions = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.circle_music)
                 .showImageForEmptyUri(R.drawable.circle_music)
-                .showImageOnFail(R.drawable.circle_music)
+                .showImageOnFail(R.drawable.juny_music)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .considerExifParams(true)

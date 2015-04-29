@@ -41,6 +41,18 @@ public class Favorite_Database {
         }
     }
 
+    public Cursor selectData() {
+//        Cursor mCursor = mDB.rawQuery("select * from " + DatabaseHelper.TABLE_NAME, null);
+        Cursor mCursor = mDB.query(
+                DatabaseHelper.TABLE_NAME,
+                DatabaseHelper.mColumm,
+                null, null, null, null, DatabaseHelper.KEY_INDEX + " asc");
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
+    }
+
     public long insert(FavoriteItem item) {
         ContentValues cv = new ContentValues();
         cv.put(DatabaseHelper.KEY_AUDIO_ID, item.mAudioID);
