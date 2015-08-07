@@ -1,3 +1,0 @@
-include ':app', ':_dslv', ':_PageSlidingTabStrip'
-project(':_dslv').projectDir = new File('dslv')
-project(':_PageSlidingTabStrip').projectDir = new File('PageSlidingTabStrip')
