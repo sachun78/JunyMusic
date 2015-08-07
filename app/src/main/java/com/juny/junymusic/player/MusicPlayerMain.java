@@ -456,6 +456,7 @@ public class MusicPlayerMain extends ActionBarActivity {
             try {
                 pos = sService.position();
                 if (pos > 2000L) {
+                    queueNextRefresh(1);
                     sService.seek(0);
                     sService.play();
                 }
@@ -552,7 +553,13 @@ public class MusicPlayerMain extends ActionBarActivity {
 
         updateTrackInfo();
         long next = refreshNow();
-        queueNextRefresh(next);
+        try {
+            if (sService.isPlaying()) {
+                queueNextRefresh(next);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private Handler mHandler = new Handler() {
@@ -570,7 +577,13 @@ public class MusicPlayerMain extends ActionBarActivity {
 
                 case REFRESH:
                     long next = refreshNow();
-                    queueNextRefresh(next);
+                    try {
+                        if (sService != null && sService.isPlaying()) {
+                            queueNextRefresh(next);
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
                 case QUIT:
@@ -724,7 +737,7 @@ public class MusicPlayerMain extends ActionBarActivity {
             if (width <= 0) {
                 width = 320;
             }
-//            Log.d("hjbae", "refreshNow :: width: " + width + " duration: " + mDuration);
+            Log.d("hjbae", "refreshNow :: width: " + width + " duration: " + mDuration);
 
             long smothRefreshTime = mDuration / width;
 
@@ -758,7 +771,8 @@ public class MusicPlayerMain extends ActionBarActivity {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
+        mHandler.removeMessages(REFRESH);
         super.onPause();
     }
 

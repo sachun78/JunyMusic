@@ -199,6 +199,12 @@ public class MiniPlayerFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        mHandler.removeMessages(REFRESH);
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
         Utils.unbindFromService(mToken);
         mActivity.unregisterReceiver(mReceiver);
