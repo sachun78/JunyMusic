@@ -157,7 +157,7 @@ public class MiniPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        refreshPlayBtn();
+        init_UI();
     }
 
     private void init_UI() {
@@ -180,7 +180,9 @@ public class MiniPlayerFragment extends Fragment {
 
             mDuration = sService.duration();
             int delay = refreshNow();
-            queueNextRefresh(delay);
+            if (sService.isPlaying()) {
+                queueNextRefresh(delay);
+            }
 
             refreshPlayBtn();
         } catch (RemoteException e) {
